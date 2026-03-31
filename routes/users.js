@@ -3,11 +3,12 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  res.send('respond with a resource data');
 });
 
-router.post('/', function(req, res, next) {
-  res.send(JSON.stringify(req.body));
+router.post('/:id', function(req, res, next) {
+  // res.send(JSON.stringify(req.body));
+  res.send(req.params.id)
 });
 
 module.exports = router;
