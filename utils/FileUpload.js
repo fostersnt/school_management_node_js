@@ -3,10 +3,10 @@ const path = require("path");
 
 // const FileProcessing = (storageDestination, fileExtensions, fileLimits = {}) => {
     //! Storage setup
-    const storageDestination = 'uploads';
+    const storageDestination = 'public/uploads';
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, `${storageDestination}/`);
+            cb(null, `${storageDestination}`);
         },
         filename: function (req, file, cb) {
             const cleanName = file.originalname.replace(/\s+/g, "_");
