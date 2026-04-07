@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const {ResponseFormat} = require('../utils/ResponseFormat');
+const { ResponseFormat } = require('../utils/ResponseFormat');
+const { uploadFunc } = require('../utils/FileUpload');
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -21,7 +22,7 @@ router.get('/search', function (req, res, next) {
       return res.status(400).json(ResponseFormat(true, 'Age is required', null));
     }
 
-    return res.json(ResponseFormat(true, 'Record found', {name: name, age: age}));
+    return res.json(ResponseFormat(true, 'Record found', { name: name, age: age }));
 
   } catch (error) {
     // return res.json(ResponseFormat(true, 'Record found mmmm', {name: null, age: null}));
@@ -34,7 +35,10 @@ router.get('/:id', function (req, res, next) {
   res.send(req.params.id)
 });
 
-router.post('/', function (req, res, next) {
+router.post('/', uploadFunc.single("file"), function (req, res, next) {
+  const extensions = /jpeg|jpg|png|pdf/;
+  const fileLimits = { fileSize: 2 * 1024 * 1024 }
+  // FileProcessing('uploads', extensions, fileLimits)
   res.status(200).json(req.body)
 });
 

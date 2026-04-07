@@ -1,21 +1,23 @@
 const multer = require("multer");
 const path = require("path");
 
-const FileProcessing = (storage_destination, fileExtensions, fileLimits = {}) => {
+// const FileProcessing = (storageDestination, fileExtensions, fileLimits = {}) => {
     //! Storage setup
+    const storageDestination = 'uploads';
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, `${storage_destination}/`);
+            cb(null, `${storageDestination}/`);
         },
         filename: function (req, file, cb) {
-            const uniqueName = Date.now() + "-" + file.originalname;
+            const cleanName = file.originalname.replace(/\s+/g, "_");
+            const uniqueName = Date.now() + "-" + cleanName;
             cb(null, uniqueName);
         }
     });
 
     //! File validation
     const fileFilter = (req, file, cb) => {
-        const allowedTypes = fileExtensions ?? /jpeg|jpg|png|pdf/;
+        const allowedTypes = /jpeg|jpg|png|pdf/;
         const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
         const mime = allowedTypes.test(file.mimetype);
 
@@ -27,12 +29,12 @@ const FileProcessing = (storage_destination, fileExtensions, fileLimits = {}) =>
     };
 
     //! Initialize upload middleware
-    // { fileSize: 2 * 1024 * 1024 }
-    const upload = multer({
+    const fileLimits = { fileSize: 2 * 1024 * 1024 }
+    const uploadFunc = multer({
         storage: storage,
         limits: fileLimits, // 2MB
         fileFilter: fileFilter
     });
-}
+// }
 
-module.exports.FileProcessing = FileProcessing;
+module.exports.uploadFunc = uploadFunc;
