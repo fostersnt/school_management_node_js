@@ -20,7 +20,7 @@ const FileProcessing = (
         },
         filename: function (req, file, cb) {
             const cleanName = file.originalname.replace(/\s+/g, "_");
-            const uniqueName = Date.now() + "-" + cleanName;
+            const uniqueName = Date.now() + "_" + cleanName;
             cb(null, uniqueName);
         }
     });
@@ -48,8 +48,8 @@ const FileProcessing = (
 
     //! File size (convert MB → bytes)
     const limits = {
-        fileSize: fileSizeMB
-        // fileSize: fileSizeMB * 1024 * 1024
+        // fileSize: fileSizeMB
+        fileSize: fileSizeMB * 1024 * 1024
     };
 
     //! Return multer instance

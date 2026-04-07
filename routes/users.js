@@ -22,7 +22,7 @@ router.get('/search', function (req, res, next) {
       return res.status(400).json(ResponseFormat(true, 'Age is required', null));
     }
 
-    return res.json(ResponseFormat(true, 'Record found', { name: name, age: age }));
+    return res.status(200).json(ResponseFormat(true, 'Record found', { name: name, age: age }));
 
   } catch (error) {
     // return res.json(ResponseFormat(true, 'Record found mmmm', {name: null, age: null}));
@@ -50,19 +50,9 @@ router.post('/', function (req, res, next) {
   const uploadImage = FileProcessing("public/uploads", fileExtensions, expectedFileSize);
   uploadImage.single("file")(req, res, function (err) {
     if (err) {
-      if (err.code === "LIMIT_FILE_SIZE") {
-        return res.status(400).json({
-          error: `File too large. Max size is ${expectedFileSize}MB`
-        });
-      } else {
-        return res.status(400).json({ error: err.message });
-      }
-    }
-    else {
-      res.json({
-        message: "File uploaded successfully",
-        file: req.file
-      });
+      return res.status(400).json(ResponseFormat(true, err.message, null));
+    }else {
+      return res.status(200).json(ResponseFormat(false, "File uploaded successfully", null))
     }
   });
   // res.status(200).json(req.body)
