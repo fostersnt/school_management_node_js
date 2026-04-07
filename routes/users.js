@@ -21,9 +21,10 @@ router.get('/search', function (req, res, next) {
       return res.status(400).json(ResponseFormat(true, 'Age is required', null));
     }
 
-    res.json({ name, age });
+    return res.json(ResponseFormat(true, 'Record found', {name: name, age: age}));
 
   } catch (error) {
+    // return res.json(ResponseFormat(true, 'Record found mmmm', {name: null, age: null}));
     next(error); // pass to global error handler
   }
 });
