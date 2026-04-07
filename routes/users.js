@@ -34,4 +34,8 @@ router.get('/:id', function (req, res, next) {
   res.send(req.params.id)
 });
 
+router.post('/', function (req, res, next) {
+  res.status(200).json(req.body)
+});
+
 module.exports = router;
