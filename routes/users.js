@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const { ResponseFormat } = require('../utils/ResponseFormat');
-const { uploadFunc } = require('../utils/FileUpload');
+const FileProcessing = require("../utils/FileUpload");
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -35,11 +35,37 @@ router.get('/:id', function (req, res, next) {
   res.send(req.params.id)
 });
 
-router.post('/', uploadFunc.single("file"), function (req, res, next) {
-  const extensions = /jpeg|jpg|png|pdf/;
-  const fileLimits = { fileSize: 2 * 1024 * 1024 }
-  // FileProcessing('uploads', extensions, fileLimits)
-  res.status(200).json(req.body)
+router.post('/', function (req, res, next) {
+  // const extensions = /jpeg|jpg|png|pdf/;
+  // const fileLimits = { fileSize: 2 * 1024 * 1024 }
+  const mimeTypes = {
+    jpg: "image/jpeg",
+    png: "image/png",
+    pdf: "application/pdf"
+  };
+
+  const fileExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+  const expectedFileSize = 2; //! in Megabytes (MB)
+
+  const uploadImage = FileProcessing("public/uploads", fileExtensions, expectedFileSize);
+  uploadImage.single("file")(req, res, function (err) {
+    if (err) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({
+          error: `File too large. Max size is ${expectedFileSize}MB`
+        });
+      } else {
+        return res.status(400).json({ error: err.message });
+      }
+    }
+    else {
+      res.json({
+        message: "File uploaded successfully",
+        file: req.file
+      });
+    }
+  });
+  // res.status(200).json(req.body)
 });
 
 module.exports = router;

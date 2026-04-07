@@ -1,12 +1,22 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
-// const FileProcessing = (storageDestination, fileExtensions, fileLimits = {}) => {
+const FileProcessing = (
+    storageDestination = "public/uploads",
+    fileExtensions = ["jpeg", "jpg", "png", "pdf"],
+    fileSizeMB = 2
+) => {
+
+    //! Ensure folder exists
+    if (!fs.existsSync(storageDestination)) {
+        fs.mkdirSync(storageDestination, { recursive: true });
+    }
+
     //! Storage setup
-    const storageDestination = 'public/uploads';
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, `${storageDestination}`);
+            cb(null, storageDestination);
         },
         filename: function (req, file, cb) {
             const cleanName = file.originalname.replace(/\s+/g, "_");
@@ -17,24 +27,37 @@ const path = require("path");
 
     //! File validation
     const fileFilter = (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|pdf/;
-        const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const allowedTypes = new RegExp(fileExtensions.join("|"));
+
+        const ext = allowedTypes.test(
+            path.extname(file.originalname).toLowerCase()
+        );
+
         const mime = allowedTypes.test(file.mimetype);
 
         if (ext && mime) {
             cb(null, true);
         } else {
-            cb(new Error("Only images and PDFs are allowed"));
+            cb(
+                new Error(
+                    `Only these file types are allowed: ${fileExtensions.join(", ")}`
+                )
+            );
         }
     };
 
-    //! Initialize upload middleware
-    const fileLimits = { fileSize: 2 * 1024 * 1024 }
-    const uploadFunc = multer({
-        storage: storage,
-        limits: fileLimits, // 2MB
-        fileFilter: fileFilter
-    });
-// }
+    //! File size (convert MB → bytes)
+    const limits = {
+        fileSize: fileSizeMB
+        // fileSize: fileSizeMB * 1024 * 1024
+    };
 
-module.exports.uploadFunc = uploadFunc;
+    //! Return multer instance
+    return multer({
+        storage,
+        limits,
+        fileFilter
+    });
+};
+
+module.exports = FileProcessing;
