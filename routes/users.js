@@ -71,7 +71,7 @@ router.post('/', function (req, res, next) {
       return res.status(400).json(ResponseFormat(true, err.message, null));
     }else if (!req.file) {
         return res.status(400).json(
-            ResponseFormat(true, "File is required", null)
+            ResponseFormat(true, "file is required", null)
         );
     }else {
       return res.status(200).json(ResponseFormat(false, "File uploaded successfully", null))
