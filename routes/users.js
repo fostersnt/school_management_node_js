@@ -49,6 +49,7 @@ router.post('/', function (req, res, next) {
 
   const uploadImage = FileProcessing("public/uploads", fileExtensions, expectedFileSize);
   uploadImage.single("file")(req, res, function (err) {
+    // return
     if (err) {
       return res.status(400).json(ResponseFormat(true, err.message, null));
     }else {
