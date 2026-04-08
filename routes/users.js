@@ -3,9 +3,26 @@ var router = express.Router();
 const { ResponseFormat } = require('../utils/ResponseFormat');
 const FileProcessing = require("../utils/FileUpload");
 
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+
+const users = [];
+
 /* GET users listing. */
 router.get('/', function (req, res, next) {
   res.send('respond with a resource data');
+});
+
+//! Register user
+router.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  users.push({ username, password: hashedPassword });
+
+  res.json({ message: 'User registered', user: users });
 });
 
 router.get('/search', function (req, res, next) {
@@ -44,7 +61,7 @@ router.post('/', function (req, res, next) {
     pdf: "application/pdf"
   };
 
-  const fileExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+  const fileExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
   const expectedFileSize = 2; //! in Megabytes (MB)
 
   const uploadImage = FileProcessing("public/uploads", fileExtensions, expectedFileSize);
@@ -52,6 +69,10 @@ router.post('/', function (req, res, next) {
     // return
     if (err) {
       return res.status(400).json(ResponseFormat(true, err.message, null));
+    }else if (!req.file) {
+        return res.status(400).json(
+            ResponseFormat(true, "File is required", null)
+        );
     }else {
       return res.status(200).json(ResponseFormat(false, "File uploaded successfully", null))
     }
