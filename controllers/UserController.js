@@ -27,5 +27,5 @@ exports.createUser = async (req, res) => {
     
     const user = { id: 1, username: username, password: hashedPassword };
 
-    res.json({ message: 'User registered', user: user });
+    res.json(ResponseFormat(false, "User created successfully", user));
 }
