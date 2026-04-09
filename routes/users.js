@@ -2,28 +2,15 @@ var express = require('express');
 var router = express.Router();
 const { ResponseFormat } = require('../utils/ResponseFormat');
 const FileProcessing = require("../utils/FileUpload");
-
-require('dotenv').config();
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const userController = require('../controllers/UserController');
 
 const users = [];
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource data');
-});
+router.get('/', userController.getAllUsers);
 
 //! Register user
-router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  users.push({ username, password: hashedPassword });
-
-  res.json({ message: 'User registered', user: users });
-});
+router.post('/register', userController.createUser);
 
 router.get('/search', function (req, res, next) {
   try {
